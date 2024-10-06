@@ -5,187 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Backup/Archive Retrieval</title>
     <style>
-	* {
-		box-sizing: border-box;
-		margin: 0;
-		padding: 0;
-	}
-
-	body {
-		font-family: Arial, sans-serif;
-		background-color: #f4f4f9;
-		color: #333;
-		padding: 20px;
-		line-height: 1.6;
-	}
-
-	.container {
-		display: flex;
-		justify-content: space-between;  
-		align-items: flex-start; 
-	}
-
-	.terapie-list {
-		flex: 1;
-		max-width: 45%;  
-		margin-right: 20px; 
-	}
-
-	.calendar-container {
-		flex: 1;
-		max-width: 50%; 
-	}
-
-	.month-switcher {
-		display: flex;
-		justify-content: space-between;  
-		align-items: center;  
-		margin-bottom: 10px;  /* Reduced margin to move the buttons closer */
-	}
-
-	#currentMonth {
-		flex-grow: 2;
-		text-align: center;
-		font-size: 1.5rem;
-		font-weight: bold;
-		margin-bottom: 10px;  /* Ensures there is spacing between the title and the calendar */
-	}
-
-	.weekdays {
-		display: grid;
-		grid-template-columns: repeat(7, 1fr);  /* Same as the .calendar */
-		text-align: center;  /* Align the text in the center */
-		padding: 5px 0;  /* Adjusted padding */
-		background-color: #fff;
-		font-weight: bold;
-		border-bottom: 2px solid #ccc;
-	}
-
-	.calendar {
-		display: grid;
-		grid-template-columns: repeat(7, 1fr);  /* Same structure as weekdays */
-		gap: 20px;  /* Adjust the gap as needed */
-		padding: 0px;
-		background-color: #f9f9f9;
-		border-radius: 10px;
-		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-	}
-
-
-	.day {
-		position: relative;
-		width: 40px;
-		height: 40px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		background-color: #f1f1f1;
-		border-radius: 50%;
-		border: 1px solid #ccc;
-		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-		font-size: 0.9rem;
-	}
-
-	.day:hover {
-		background-color: #e0e0e0;
-		transform: scale(1.05);
-	}
-
-	button {
-		background-color: #007bff;
-		color: white;
-		border: none;
-		padding: 5px 15px;  
-		border-radius: 5px;
-		cursor: pointer;
-		font-size: 1rem;
-		transition: background-color 0.3s ease;
-		margin: 0 5px;  /* Added spacing between the buttons */
-	}
-
-	button:hover {
-		background-color: #0056b3;
-	}
-
-	button:disabled {
-		background-color: #ccc;
-		cursor: not-allowed;
-	}
-
-
-	.day[data-complete="true"] {
-		background-color: #aaffaa;  /* Green for completed days */
-	}
-
-	.day[data-complete="false"] {
-		background-color: #ffaaaa;  /* Red for incomplete days */
-	}
-
-	.mini-indicator {
-		width: 10px;  /* Smaller size for the indicator */
-		height: 10px;
-		background: #00ff00;  /* Same green for complete */
-		border-radius: 50%;
-		position: absolute;
-		top: -7px;  /* Adjusts the position outside the day circle */
-		right: -7px;
-	}
-
-	.mini-indicator.incomplete {
-		background: #ff0000;  /* Red for incomplete */
-	}
-
-	.day {
-		position: relative;  /* Allows positioning the mini-indicator */
-		width: 40px;
-		height: 40px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		background-color: #f1f1f1;
-		border-radius: 50%;
-		border: 1px solid #ccc;
-		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-		font-size: 0.9rem;
-	}
-
-	.month-switcher {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 20px;
-		gap: 10px;
-	}
-
-	#currentMonth {
-		flex: 2;
-		text-align: center;
-		font-size: 1.5rem;
-		font-weight: bold;
-	}
-	
-	.day.today {
-    background-color: #ffff00; /* Yellow highlight */
-    border: 2px solid #ffcc00; /* Add a border for emphasis */
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-	}
-	
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        th {
+        body {
+            font-family: Arial, sans-serif;
             background-color: #f4f4f9;
+            color: #333;
+            padding: 35px;
+            line-height: 1.6;
         }
+
+		h1 {
+			margin: 0;
+			font-size: 2rem;
+		}
+
+		#message {
+			font-size: 1rem;
+			padding: 10px;
+			border-radius: 5px;
+		}
+
+        .container {
+            display: flex;
+            justify-content: start;
+            align-items: start;
+            gap: 200px; /* Space between table and calendar */
+        }
+		
+		.header-container {
+			display: flex;
+			align-items: center;
+			gap: 70px; /* Use gap instead of margin-left for better control of spacing */
+			margin-bottom: 30px; /* Space below the header section */
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 20px 0;
+			max-width: 600px; /* Increased the max-width for better visual balance */
+			font-size: 1.2rem; /* Increased font size */
+		}
+
+		th, td {
+			padding: 15px; /* Increased padding for a larger look */
+			border: 1px solid #ddd;
+			text-align: left;
+		}
+
+		th {
+			background-color: #f4f4f9;
+			font-size: 1.3rem; /* Larger header text */
+		}
 
         .up-to-date {
             background-color: #d4edda; /* Green for up-to-date */
@@ -194,97 +70,204 @@
         .outdated {
             background-color: #f8d7da; /* Red for outdated */
         }
+
+		.calendar-container {
+			flex: 1;
+			max-width: 700px; /* Adjusted the width for better proportion */
+		}
+
+        .month-switcher {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+		#currentMonth {
+			flex: 2;
+			text-align: center;
+			font-size: 2rem; /* Increased font size for visibility */
+			font-weight: bold;
+		}
+
+		.weekdays, .calendar {
+			display: grid;
+			grid-template-columns: repeat(7, 1fr);
+			gap: 15px; /* Increased gap for a larger look */
+			text-align: center;
+		}
+
+		.day {
+			position: relative;
+			width: 50px; /* Increased width for larger days */
+			height: 50px; /* Increased height for larger days */
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background-color: #f1f1f1;
+			border-radius: 50%;
+			border: 1px solid #ccc;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			font-size: 1.2rem; /* Increased font size for day numbers */
+		}
+
+		.day.today {
+			background-color: #ffff00; /* Yellow highlight */
+			border: 2px solid #ffcc00; /* Add a border for emphasis */
+			box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+		}
+
+        .day[data-complete="true"] {
+            background-color: #aaffaa;  /* Green for completed days */
+        }
+
+        .day[data-complete="false"] {
+            background-color: #ffaaaa;  /* Red for incomplete days */
+        }
+
+		.mini-indicator {
+			width: 12px; /* Increased size of the mini-indicator */
+			height: 12px;
+			border-radius: 50%;
+			position: absolute;
+			top: -8px;
+			right: -8px;
+		}
+
+        .mini-indicator.complete {
+            background: #00ff00;  /* Green for complete */
+        }
+
+        .mini-indicator.incomplete {
+            background: #ff0000;  /* Red for incomplete */
+        }
+
+		button {
+			background-color: #007bff;
+			color: white;
+			border: none;
+			padding: 10px 20px; /* Increased padding for a larger button */
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 1.2rem; /* Increased font size */
+			transition: background-color 0.3s ease;
+		}
+
+		button:hover {
+			background-color: #0056b3;
+		}
+
+		button:disabled {
+			background-color: #ccc;
+			cursor: not-allowed;
+		}
     </style>
 </head>
 <body>
-    <h1>Backup/Archive Retrieval</h1>
-
-    <div>
-        <button id="retrieveButton" onclick="retrieveTerapie()" disabled>Retrieve Latest Terapie</button>
+    <!-- Header container for H1 and Message -->
+    <div class="header-container">
+        <h1>Backup/Archive Retrieval</h1>
+        <!-- Message Area for Notifications -->
+        <div id="message" style="display: none; padding: 10px; border-radius: 5px; margin-left: 20px;"></div>
     </div>
 
-    <table id="pdfTable">
-        <thead>
-            <tr>
-                <th>PDF File</th>
-                <th>Status</th>
-                <th>Last Available Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Rows will be dynamically added here -->
-        </tbody>
-    </table>
+    <!-- Flex container for table and calendar -->
+    <div class="container">
+        <div>
+            <!-- Header container for Available Terapie and Retrieve button -->
+            <div class="header-container">
+                <h2>Available Terapie</h2>
+                <button id="retrieveButton" onclick="retrieveTerapie()" disabled>Retrieve Latest Terapie</button>
+            </div>
 
-	<div class="container">
-		<div class="terapie-list">
-			<h2>Available Terapie</h2>
-			<ul id="terapieList">
-				<!-- Available terapie will be listed here -->
-			</ul>
-		</div>
+            <table id="pdfTable">
+                <thead>
+                    <tr>
+                        <th>PDF File</th>
+                        <th>Status</th>
+                        <th>Last Available Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
 
-		<div class="calendar-container">
-			<div class="month-switcher">
-				<button id="prevMonth" onclick="changeMonth(-1)">Previous Month</button>
-				<h2 id="currentMonth">October 2024</h2> <!-- Add year in the title -->
-				<button id="nextMonth" onclick="changeMonth(1)">Next Month</button>
-			</div>
+        <div class="calendar-container">
+            <div class="month-switcher">
+                <button id="prevMonth" onclick="changeMonth(-1)">Previous Month</button>
+                <h2 id="currentMonth">October 2024</h2>
+                <button id="nextMonth" onclick="changeMonth(1)">Next Month</button>
+            </div>
 
-			<div class="weekdays">
-				<div class="weekday">Mon</div>
-				<div class="weekday">Tue</div>
-				<div class="weekday">Wed</div>
-				<div class="weekday">Thu</div>
-				<div class="weekday">Fri</div>
-				<div class="weekday">Sat</div>
-				<div class="weekday">Sun</div>
-			</div>
+            <div class="weekdays">
+                <div class="weekday">Mon</div>
+                <div class="weekday">Tue</div>
+                <div class="weekday">Wed</div>
+                <div class="weekday">Thu</div>
+                <div class="weekday">Fri</div>
+                <div class="weekday">Sat</div>
+                <div class="weekday">Sun</div>
+            </div>
 
-			<div id="calendarDays" class="calendar">
-				<!-- Calendar days will be inserted here dynamically -->
-			</div>
-		</div>
-	</div>
+            <div id="calendarDays" class="calendar">
+                <!-- Calendar days will be inserted here dynamically -->
+            </div>
+        </div>
+    </div>
 
 
     <script>
-        function checkAvailableTerapie() {
-            fetch('/check_up_to_date')
-                .then(response => response.json())
-                .then(data => {
-                    const tableBody = document.querySelector('#pdfTable tbody');
-                    tableBody.innerHTML = ''; // Clear previous list
+	function checkAvailableTerapie() {
+		fetch('/check_up_to_date')
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Network response was not ok: ' + response.statusText);
+				}
+				return response.json();
+			})
+			.then(data => {
+				console.log('Received data:', data); // Debug log to see the received data
 
-                    for (let terapie in data) {
-                        if (data.hasOwnProperty(terapie)) {
-                            const row = document.createElement('tr');
-                            const fileCell = document.createElement('td');
-                            const statusCell = document.createElement('td');
-                            const dateCell = document.createElement('td');
+				const tableBody = document.querySelector('#pdfTable tbody');
+				tableBody.innerHTML = ''; // Clear previous list
 
-                            fileCell.textContent = terapie;
-                            statusCell.textContent = data[terapie].up_to_date ? 'Up to date' : 'Outdated';
-                            dateCell.textContent = data[terapie].latest_date || 'Unknown';  // Display the date or 'Unknown' if missing
+				for (let terapie in data) {
+					if (data.hasOwnProperty(terapie)) {
+						const row = document.createElement('tr');
+						const fileCell = document.createElement('td');
+						const statusCell = document.createElement('td');
+						const dateCell = document.createElement('td');
 
-                            // Apply class for coloring
-                            row.classList.add(data[terapie].up_to_date ? 'up-to-date' : 'outdated');
+						fileCell.textContent = terapie;
+						statusCell.textContent = data[terapie].up_to_date ? 'Up to date' : 'Outdated';
 
-                            row.appendChild(fileCell);
-                            row.appendChild(statusCell);
-                            row.appendChild(dateCell);
-                            tableBody.appendChild(row);
-                        }
-                    }
+						// Display the date only if the file is outdated
+						if (!data[terapie].up_to_date) {
+							dateCell.textContent = data[terapie].latest_date || 'Unknown';
+						} else {
+							dateCell.textContent = '';  // Leave empty for up-to-date files
+						}
 
-                    // Enable the button only if there are any outdated files
-                    const allUpToDate = Object.values(data).every(item => item.up_to_date);
-                    document.getElementById('retrieveButton').disabled = allUpToDate;
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
+						// Apply class for coloring
+						row.classList.add(data[terapie].up_to_date ? 'up-to-date' : 'outdated');
+
+						row.appendChild(fileCell);
+						row.appendChild(statusCell);
+						row.appendChild(dateCell);
+						tableBody.appendChild(row);
+					}
+				}
+
+				// Enable the button only if there are any outdated files
+				const allUpToDate = Object.values(data).every(item => item.up_to_date);
+				document.getElementById('retrieveButton').disabled = allUpToDate;
+			})
+			.catch(error => {
+				console.error('Error fetching terapie data:', error); // Log the error to console
+			});
+	}
 
 	let currentMonth = new Date().getMonth();  // Current month (0-indexed)
 	let currentYear = new Date().getFullYear();  // Current year
@@ -374,17 +357,35 @@
 		renderCalendar(currentYear, currentMonth);
 	}
 
-         function retrieveTerapie() {
-            fetch('/retrieve_terapie', { method: 'POST' })
-                .then(response => response.json())
-                .then(data => {
-                    alert('Terapie retrieved: ' + data.message);
-                    checkAvailableTerapie(); // Refresh the list after retrieval
-                })
-                .catch(error => {
-                    console.error('Error retrieving Terapie:', error);
-                });
-        }
+	function retrieveTerapie() {
+		fetch('/retrieve_terapie', { method: 'POST' })
+			.then(response => response.json())
+			.then(data => {
+				showMessage('Terapie retrieved successfully!', 'success');
+				// Refresh the table after retrieval
+				checkAvailableTerapie();
+				// Refresh the calendar after retrieval
+				renderCalendar(currentYear, currentMonth);
+			})
+			.catch(error => {
+				showMessage('Error retrieving Terapie: ' + error.message, 'error');
+				console.error('Error retrieving Terapie:', error);
+			});
+	}
+
+	function showMessage(message, type) {
+		const messageDiv = document.getElementById('message');
+		messageDiv.textContent = message;
+		messageDiv.style.display = 'block';
+		messageDiv.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
+		messageDiv.style.color = type === 'success' ? '#155724' : '#721c24';
+		messageDiv.style.border = type === 'success' ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
+
+		// Hide the message after 5 seconds
+		setTimeout(() => {
+			messageDiv.style.display = 'none';
+		}, 5000);
+	}
 
 	function updateMonthNavigation() {
 		// Disable the "Next Month" button if it's the current month

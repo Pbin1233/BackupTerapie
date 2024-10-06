@@ -174,21 +174,25 @@ def check_up_to_date():
     for pdf_name in pdf_names:
         latest_pdf = find_latest_pdf(base_folder, pdf_name)
         source_pdf = os.path.join(destination_folder, pdf_name)
-        
-        # Only log to the terminal, these print statements should not be included in the response
-        print(f"Checking file: {pdf_name}")
-        
-        # Determine up-to-date status
-        if os.path.exists(source_pdf):
-            print(f"{pdf_name} is up-to-date")
-            up_to_date[pdf_name] = True
-        else:
-            print(f"{pdf_name} is outdated or missing")
-            up_to_date[pdf_name] = False
-    
-    # Return only the clean dictionary
-    return up_to_date
 
+        # Check if the source PDF exists
+        if os.path.exists(source_pdf):
+            # Get the last modified date of the source PDF
+            last_modified = datetime.fromtimestamp(os.path.getmtime(source_pdf)).strftime('%Y-%m-%d')
+            print(f"{pdf_name} is up-to-date (last modified: {last_modified})")
+            up_to_date[pdf_name] = {"up_to_date": True, "latest_date": last_modified}
+        else:
+            # If the PDF is missing or outdated, retrieve the latest available version from the archive
+            if latest_pdf:
+                last_modified = datetime.fromtimestamp(os.path.getmtime(latest_pdf)).strftime('%Y-%m-%d')
+                print(f"{pdf_name} is outdated or missing (latest available: {last_modified})")
+                up_to_date[pdf_name] = {"up_to_date": False, "latest_date": last_modified}
+            else:
+                # If no version of the PDF is found in the archive
+                print(f"{pdf_name} is missing (no available version found)")
+                up_to_date[pdf_name] = {"up_to_date": False, "latest_date": "Not Available"}
+    
+    return up_to_date
 
 def retrieve_terapie():
     base_folder = os.getenv('ARCHIVE_DIR')
