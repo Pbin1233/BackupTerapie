@@ -93,14 +93,24 @@
 		.weekdays, .calendar {
 			display: grid;
 			grid-template-columns: repeat(7, 1fr);
-			gap: 15px; /* Increased gap for a larger look */
+			gap: 20px; /* Increased gap for a larger look */
 			text-align: center;
+			margin-left: 0px; /* Shift the weekdays and calendar to the right */
+		}
+		
+		.weekday, .day {
+			width: 80px;  /* Increased width for bigger size */
+			height: 80px; /* Increased height for bigger size */
+			font-size: 1.5rem; /* Increased font size for better visibility */
+			display: flex;
+			justify-content: center;
+			align-items: center;
 		}
 
 		.day {
 			position: relative;
-			width: 50px; /* Increased width for larger days */
-			height: 50px; /* Increased height for larger days */
+			width: 60px; /* Increased width for larger days */
+			height: 60px; /* Increased height for larger days */
 			display: flex;
 			justify-content: center;
 			align-items: center;
@@ -192,6 +202,19 @@
                     <!-- Rows will be dynamically added here -->
                 </tbody>
             </table>
+			
+			<h2>Mese Successivo PDFs</h2>
+			<table id="meseSuccessivoTable">
+				<thead>
+					<tr>
+						<th>PDF File</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- Rows will be dynamically added here -->
+				</tbody>
+			</table>
         </div>
 
         <div class="calendar-container">
@@ -216,6 +239,9 @@
             </div>
         </div>
     </div>
+	
+	<button id="forceRetrieveButton" onclick="forceRetrieve()" disabled>Force Retrieve PDFs</button>
+
 
 
     <script>
@@ -228,31 +254,29 @@
 				return response.json();
 			})
 			.then(data => {
-				console.log('Received data:', data); // Debug log to see the received data
-
 				const tableBody = document.querySelector('#pdfTable tbody');
 				tableBody.innerHTML = ''; // Clear previous list
 
-				for (let terapie in data) {
-					if (data.hasOwnProperty(terapie)) {
+				let hasOutdated = false; // Track if there are any outdated files
+
+				for (let terapie in data.up_to_date) {
+					if (data.up_to_date.hasOwnProperty(terapie)) {
 						const row = document.createElement('tr');
 						const fileCell = document.createElement('td');
 						const statusCell = document.createElement('td');
 						const dateCell = document.createElement('td');
 
 						fileCell.textContent = terapie;
-						statusCell.textContent = data[terapie].up_to_date ? 'Up to date' : 'Outdated';
+						statusCell.textContent = data.up_to_date[terapie].up_to_date ? 'Up to date' : 'Outdated';
 
-						// Display the date only if the file is outdated
-						if (!data[terapie].up_to_date) {
-							dateCell.textContent = data[terapie].latest_date || 'Unknown';
+						if (!data.up_to_date[terapie].up_to_date) {
+							dateCell.textContent = data.up_to_date[terapie].latest_date || 'Unknown';
+							hasOutdated = true; // Mark that there is an outdated file
 						} else {
 							dateCell.textContent = '';  // Leave empty for up-to-date files
 						}
 
-						// Apply class for coloring
-						row.classList.add(data[terapie].up_to_date ? 'up-to-date' : 'outdated');
-
+						row.classList.add(data.up_to_date[terapie].up_to_date ? 'up-to-date' : 'outdated');
 						row.appendChild(fileCell);
 						row.appendChild(statusCell);
 						row.appendChild(dateCell);
@@ -260,15 +284,91 @@
 					}
 				}
 
-				// Enable the button only if there are any outdated files
-				const allUpToDate = Object.values(data).every(item => item.up_to_date);
-				document.getElementById('retrieveButton').disabled = allUpToDate;
+				if (data.mese_successivo) {
+					// Add a new section to show the Mese successivo status
+					const meseTableBody = document.querySelector('#meseSuccessivoTable tbody');
+					meseTableBody.innerHTML = '';  // Clear previous content
+
+					for (let file in data.mese_successivo) {
+						if (data.mese_successivo.hasOwnProperty(file)) {
+							const row = document.createElement('tr');
+							const fileCell = document.createElement('td');
+							const statusCell = document.createElement('td');
+
+							fileCell.textContent = file;
+							statusCell.textContent = data.mese_successivo[file] ? 'Present' : 'Missing';
+
+							row.classList.add(data.mese_successivo[file] ? 'up-to-date' : 'outdated');
+							row.appendChild(fileCell);
+							row.appendChild(statusCell);
+							meseTableBody.appendChild(row);
+						}
+					}
+				}
+
+				document.getElementById('forceRetrieveButton').disabled = !hasOutdated;
 			})
 			.catch(error => {
 				console.error('Error fetching terapie data:', error); // Log the error to console
 			});
 	}
 
+	function forceRetrieve() {
+		console.log("Force Retrieve button clicked");
+
+		fetch('/force_retrieve', { method: 'POST' })
+			.then(response => {
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return response.json();
+			})
+			.then(data => {
+				showMessage('PDF retrieval process started!', 'success');
+				console.log("Started PDF retrieval process");
+				
+				// Additional log to ensure the updated status is fetched from the backend
+				console.log("Updated status received from backend:", data.updated_status);
+
+				// Set up polling to check for updated status every few seconds
+				console.log("Initializing polling...");
+				let interval = setInterval(() => {
+					console.log("Polling for PDF status...");
+
+					// Call to refresh the table and calendar
+					checkAvailableTerapie();  // Refresh the table
+					renderCalendar(currentYear, currentMonth);  // Refresh the calendar
+
+					// Check if all PDFs are up-to-date; if so, stop polling
+					fetch('/check_up_to_date')
+						.then(response => {
+							console.log("Polling response received");
+							if (!response.ok) {
+								throw new Error(`HTTP error! status: ${response.status}`);
+							}
+							return response.json();
+						})
+						.then(status => {
+							console.log("Status received from /check_up_to_date:", status);
+
+							const allUpToDate = Object.values(status).every(item => item.up_to_date);
+							if (allUpToDate) {
+								clearInterval(interval);  // Stop polling once all PDFs are up-to-date
+								showMessage('All PDFs are up to date!', 'success');
+								console.log("All PDFs are up-to-date. Stopping polling.");
+							}
+						})
+						.catch(error => {
+							console.error('Error checking PDF status during polling:', error);
+						});
+				}, 3000);  // Poll every 3 seconds
+
+			})
+			.catch(error => {
+				showMessage('Error retrieving PDFs: ' + error.message, 'error');
+				console.error('Error retrieving PDFs:', error);
+			});
+	}
 	let currentMonth = new Date().getMonth();  // Current month (0-indexed)
 	let currentYear = new Date().getFullYear();  // Current year
 	let today = new Date();

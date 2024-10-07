@@ -163,8 +163,8 @@ def main(change_month):
     driver.quit()
     print("PDFs generated and saved to the specified directory")
 
-    # Wait for a few minutes before closing the shell window
-    time.sleep(120)
+    # Wait before closing the shell window
+    time.sleep(20)
     
 
 if __name__ == "__main__":

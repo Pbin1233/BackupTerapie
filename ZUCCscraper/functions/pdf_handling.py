@@ -33,11 +33,14 @@ def savepdf(driver, Nucleo, Attesa, change_month):
             with open(file_path, 'wb') as file:
                 file.write(response.content)
             log(f"PDF downloaded and saved as {file_path}", "INFO")
+
+            # Notify the backend that a PDF was saved
+            notify_backend(Nucleo, file_path)
+
         else:
             log(f"Failed to download PDF. Status code: {response.status_code}", "ERROR")
 
         time.sleep(5)
-
 
     except TimeoutException as e:
         log(f"Timeout during Stampa function for Nucleo {Nucleo}: {e}\n{traceback.format_exc()}", "ERROR")
@@ -45,3 +48,10 @@ def savepdf(driver, Nucleo, Attesa, change_month):
         log(f"Element not found during Stampa function for Nucleo {Nucleo}: {e}\n{traceback.format_exc()}", "ERROR")
     except Exception as e:
         log(f"Error during Stampa function for Nucleo {Nucleo}: {e}\n{traceback.format_exc()}", "ERROR")
+
+def notify_backend(Nucleo, file_path):
+    try:
+        # Send a request to the backend API
+        requests.post('http://localhost:5000/pdf_saved', json={'Nucleo': Nucleo, 'file_path': file_path})
+    except Exception as e:
+        log(f"Error notifying backend about PDF save: {e}", "ERROR")
