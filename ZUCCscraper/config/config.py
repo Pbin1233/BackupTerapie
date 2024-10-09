@@ -1,23 +1,10 @@
 import os
 import sys
 from pathlib import Path
-
-def find_project_root(current_path: Path, project_name: str = "BackupTerapie") -> Path:
-    while current_path.name != project_name:
-        if current_path == current_path.parent:
-            raise FileNotFoundError(f"Could not find the project root '{project_name}'")
-        current_path = current_path.parent
-    return current_path
-
-# Add the project root to the Python path
-project_root = find_project_root(Path(__file__).resolve().parent)
-sys.path.insert(0, str(project_root))
-
-# Now we can import env_utils
-from env_utils import find_and_load_dotenv
+from dotenv import load_dotenv
 
 # Load environment variables
-find_and_load_dotenv()
+load_dotenv()  # This loads the environment variables from a .env file
 
 # Configuration for download directory and Chrome user data directory
 download_dir = os.getenv('SOURCE_DIR')

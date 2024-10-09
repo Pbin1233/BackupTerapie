@@ -6,7 +6,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from config.config import download_dir, user_data_dir
+from ZUCCscraper.config.config import download_dir, user_data_dir
+
+# In-memory log buffer
+log_buffer = []
 
 # Set log level based on environment variable
 log_level = os.getenv('LOG_LEVEL', 'INFO').upper()
@@ -25,6 +28,7 @@ def log(message, level="INFO"):
     logger = logging.getLogger(__name__)
     if level == "INFO":
         logger.info(message)
+        log_buffer.append({"level": level, "message": message})  # Append log to buffer
     elif level == "DEBUG":
         logger.debug(message)
     elif level == "ERROR":
@@ -67,3 +71,10 @@ def initialize_driver():
         raise
 
     return driver
+
+def get_logs():
+    """Return the current log buffer and clear it."""
+    global log_buffer
+    logs = log_buffer[:]
+    log_buffer = []  # Clear the buffer after reading
+    return logs

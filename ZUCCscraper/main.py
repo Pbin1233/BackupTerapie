@@ -7,13 +7,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from config.config import download_dir, user_data_dir, url, username, password, mese_successivo_dir, attesa, nuclei
-from functions.driver_management import initialize_driver, log
-from functions.element_interaction import slow_typing, select_next_month, select_next_year_if_december
-from functions.pdf_handling import savepdf
-from functions.login import login
-from functions.case_specific import get_missing_nuclei, all_files_downloaded
-
+from ZUCCscraper.config.config import download_dir, user_data_dir, url, username, password, mese_successivo_dir, attesa, nuclei
+from ZUCCscraper.functions.driver_management import initialize_driver, log
+from ZUCCscraper.functions.element_interaction import slow_typing, select_next_month, select_next_year_if_december
+from ZUCCscraper.functions.pdf_handling import savepdf
+from ZUCCscraper.functions.login import login
+from ZUCCscraper.functions.case_specific import get_missing_nuclei, all_files_downloaded
 
 def start_route(driver, nucleo, Attesa, change_month):
     while True:  # Retry loop in case of a timeout
