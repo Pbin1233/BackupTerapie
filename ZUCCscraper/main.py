@@ -1,6 +1,9 @@
 import os
 import time
 import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import traceback
 from datetime import datetime, timedelta
 from selenium.webdriver.common.by import By
